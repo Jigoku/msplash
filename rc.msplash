@@ -1,0 +1,41 @@
+#!/bin/sh
+# msplash - mplayer video boot splash
+
+# Video Source
+MSPLASHVIDEO=/boot/loading.mp4
+MSPLASHFIFO=/boot/msplash.fifo
+
+
+msplash_start() {
+
+    if [ ! -r ${MSPLASHFIFO} ]; then
+        mkfifo ${MSPLASHFIFO}
+    fi
+
+    MSPLASHW=$(cat /sys/class/graphics/fb0/virtual_size | cut -d, -f1)
+    MSPLASHH=$(cat /sys/class/graphics/fb0/virtual_size | cut -d, -f2)
+
+    echo "Starting msplash (${MSPLASHW}x${MSPLASHH})"
+
+    /usr/bin/mplayer \
+        -slave -really-quiet -vo fbdev -loop 0 -fs -zoom -x ${MSPLASHW} -y ${MSPLASHH} \
+        -input file=${MSPLASHFIFO} ${MSPLASHVIDEO} < /dev/null > /dev/null &
+}
+
+msplash_stop() {
+    if [ ! -z $(pidof mplayer) ]; then
+        echo -e "q\n" > ${MSPLASHFIFO}
+    fi
+}
+
+
+case "$1" in
+    start)
+        msplash_start
+    ;;
+    stop)
+        msplash_stop
+    ;;
+    *)
+    echo "Usage: $0 (start|stop)"
+esac
