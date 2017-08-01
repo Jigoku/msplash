@@ -7,12 +7,17 @@ A simple init script that allows you to use a looped video as a bootsplash
 * You will have to supress boot messages manually
 
 ### How to use
-* Launch the script from /etc/rc.d/rc.S
+* Adjust $MSPLASHVIDEO to contain the path to your video file
+```
+MSPLASHVIDEO=/boot/loading.mp4
+```
+
+* Add to the beginning of /etc/rc.d/rc.S
 ``` 
 /etc/rc.d/rc.msplash start
 ```
 
-* End the script from /etc/rc.d/rc.local
+* Place at the end of /etc/rc.d/rc.local
 ```
 /etc/rc.d/rc.msplash stop
 ```
